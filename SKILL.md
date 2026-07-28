@@ -1,18 +1,16 @@
 ---
 name: weread-notes-export
 description: 微信读书笔记导出 — 按章节组织划线/评论，支持同名合并、安全文件名、每日同步
-version: 1.2.2
-homepage: https://github.com/dongwei6688/weread-notes-export-skill
 license: MIT
-metadata:
-  hermes:
-    tags: [weread, reading, notes, export, chinese]
-    related_skills: [reading-notes-manager]
 ---
 
-# WeRead Notes Export — 微信读书笔记导出
+# WeRead Notes Export
 
 把微信读书的**划线（书签）**和**想法（评论/批注）**按**章节树**导出为结构化 Markdown 文件。支持增量同步、同名合并、安全文件名。
+
+## Overview
+
+通过微信读书官方 API 将书籍笔记完整导出。核心能力：按章节树归类（非简单平铺）、4 策略评论匹配、同名不同作者分别保存、全平台安全文件名。纯 Python 3 标准库，零外部依赖。
 
 ## 配置
 

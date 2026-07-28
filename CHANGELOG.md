@@ -1,3 +1,10 @@
+## v1.2.3 (2026-07-28)
+
+### Changed
+- YAML 精简至 3 字段（name+description+license），对齐 anthropics 标准
+- 标题改为纯英文 `# WeRead Notes Export`
+- 新增 `## Overview` 概览节
+
 # 更新日志
 
 ## v1.2.2 (2026-07-28)
