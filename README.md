@@ -43,18 +43,13 @@ export WEREAD_API_KEY=wrk-xxxxxxxx
 
 ### 2. 安装 Skill
 
-**推荐（跨平台，兼容 Hermes / OpenClaw / Workbuddy / Claude Code 等）：**
+确保系统已安装 Node.js（`node --version` 确认，没有去 [nodejs.org](https://nodejs.org) 下载）。
 
 ```bash
 npx skills add dongwei6688/weread-notes-export-skill
 ```
 
-**手动安装：**
-
-```bash
-git clone https://github.com/dongwei6688/weread-notes-export-skill.git
-# 把目录放进 Agent 的 skills 目录即可
-```
+装完后继续下一步导出笔记即可。
 
 ### 3. 导出笔记
 
