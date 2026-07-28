@@ -30,7 +30,7 @@ metadata:
 **推荐（跨平台，兼容 Hermes / OpenClaw / Workbuddy / Claude Code 等）：**
 
 ```bash
-npx skills add dongwei6688/weread-notes-export-skill
+npx skills add https://github.com/dongwei6688/weread-notes-export-skill --skill weread-notes-export
 ```
 
 **手动安装（Hermes Agent / OpenClaw 等）：**

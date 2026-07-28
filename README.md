@@ -24,7 +24,7 @@
 
 ### 跨平台安装（已上架 skills.sh）
 ```bash
-npx skills add dongwei6688/weread-notes-export-skill
+npx skills add https://github.com/dongwei6688/weread-notes-export-skill --skill weread-notes-export
 ```
 
 ---
@@ -46,7 +46,7 @@ export WEREAD_API_KEY=wrk-xxxxxxxx
 确保系统已安装 Node.js（`node --version` 确认，没有去 [nodejs.org](https://nodejs.org) 下载）。
 
 ```bash
-npx skills add dongwei6688/weread-notes-export-skill
+npx skills add https://github.com/dongwei6688/weread-notes-export-skill --skill weread-notes-export
 ```
 
 装完后继续下一步导出笔记即可。
