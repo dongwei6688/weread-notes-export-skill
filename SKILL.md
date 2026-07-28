@@ -25,21 +25,6 @@ metadata:
 
 无外部依赖。脚本使用纯 Python 3 标准库，直接调用微信读书官方 API。
 
-## 安装
-
-**推荐（跨平台，兼容 Hermes / OpenClaw / Workbuddy / Claude Code 等）：**
-
-```bash
-npx skills add https://github.com/dongwei6688/weread-notes-export-skill --skill weread-notes-export
-```
-
-**手动安装（Hermes Agent / OpenClaw 等）：**
-
-```bash
-git clone https://github.com/dongwei6688/weread-notes-export-skill.git
-# 把克隆下来的目录放进 Agent 的 skills 目录即可
-```
-
 ## 配置
 
 ```bash
@@ -151,10 +136,3 @@ python3 scripts/export_weread_notes.py --all
 - 带评论的划线 → 划线+评论为一个整体，分隔线在评论下方
 - 章节标题前 → 不加分隔线，只留空行
 
-## 跨平台兼容
-
-本 Skill 已上架 [skills.sh](https://www.skills.sh) 生态，可通过 `npx skills add` 一键安装。使用环境变量（`WEREAD_API_KEY`、`WEREAD_NOTES_DIR`）配置，不硬编码平台路径，兼容 Hermes / OpenClaw / Workbuddy / Claude Code / Codex / Cursor 等。
-
-## 开源协议
-
-MIT
