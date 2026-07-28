@@ -30,7 +30,9 @@
 
 ### 1. 获取 API Key
 
-打开 https://weread.qq.com/r/weread-skills → 点击 **获取 API Key** → 用微信扫码登录 → 复制 `wrk-xxx` 格式的 Key。
+打开 https://weread.qq.com/r/weread-skills → 点击 **获取 API Key** → 微信扫码登录 → 复制 Key。
+
+也可以在微信读书 App → **设置** → 底部获取 **API Key**（扫码或复制 `wrk-xxx`）。
 
 ```bash
 export WEREAD_API_KEY=wrk-xxxxxxxx
