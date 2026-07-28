@@ -18,6 +18,8 @@ homepage: https://github.com/dongwei6688/weread-notes-export-skill
 echo $WEREAD_API_KEY   # 应返回 wrk-xxx 格式的 key
 ```
 
+API Key 获取：打开 https://weread.qq.com/r/weread-skills → 获取 API Key → 微信扫码 → 复制 Key。
+
 ## 安装
 
 ```bash
