@@ -18,22 +18,17 @@ metadata:
 
 ## 依赖
 
-需要先安装官方 [`weread-skills`](https://github.com/openclaw/skills) — 提供 Agent Gateway API 接入。
-
-```bash
-# 确认 WEREAD_API_KEY 环境变量已设置
-echo $WEREAD_API_KEY   # 应返回 wrk-xxx 格式的 key
-```
-
-API Key 获取：打开 https://weread.qq.com/r/weread-skills → 获取 API Key → 微信扫码 → 复制 Key。
+无外部依赖。脚本使用纯 Python 3 标准库，直接调用微信读书官方 API。
 
 ## 安装
 
 ```bash
-# 把这个仓库放进 Hermes 的 skills 目录即可
-git clone https://github.com/dongwei6688/weread-notes-export-skill \
-  ~/.hermes/skills/weread-notes-export
+# 克隆到对应平台的 skills 目录
+git clone https://github.com/dongwei6688/weread-notes-export-skill
 ```
+
+然后把克隆下来的目录放进你 Agent 的 skills 目录（如 `~/.hermes/skills/`、`~/.openclaw/skills/` 等），
+或直接对 Agent 说：**"帮我安装这个 skill"**。
 
 ## 快速开始
 

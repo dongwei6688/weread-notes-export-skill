@@ -41,10 +41,11 @@ export WEREAD_API_KEY=wrk-xxxxxxxx
 ### 2. 安装 Skill
 
 ```bash
-# Hermes Agent
-git clone https://github.com/dongwei6688/weread-notes-export-skill \
-  ~/.hermes/skills/weread-notes-export
+git clone https://github.com/dongwei6688/weread-notes-export-skill
 ```
+
+然后把目录放进你 Agent 的 skills 目录（如 `~/.hermes/skills/`、`~/.openclaw/skills/` 等），
+或直接对 Agent 说：**"帮我安装这个 skill"**。
 
 ### 3. 导出笔记
 
