@@ -1,10 +1,9 @@
 ---
 name: weread-notes-export
-description: 微信读书笔记导出 — 按章节组织划线/评论，支持同名合并、分隔线格式、每日同步
+description: 微信读书笔记导出 — 按章节组织划线/评论，支持同名合并、安全文件名、每日同步
 version: 1.1.0
 homepage: https://github.com/dongwei6688/weread-notes-export-skill
 license: MIT
-setup_needed: false
 metadata:
   hermes:
     tags: [weread, reading, notes, export, chinese]
@@ -17,7 +16,7 @@ metadata:
     install: []
 ---
 
-# WeRead Notes Export — 微信读书笔记导出 Skill
+# WeRead Notes Export — 微信读书笔记导出
 
 把微信读书的**划线（书签）**和**想法（评论/批注）**按**章节树**导出为本地的结构化 Markdown 文件。支持增量同步、同名合并、安全文件名、分隔线格式。
 
@@ -35,37 +34,20 @@ export WEREAD_API_KEY=wrk-xxxxxxxx
 ### 获取 API Key
 
 打开 https://weread.qq.com/r/weread-skills → 点击**获取 API Key** → 微信扫码 → 复制 Key。
-
 或在微信读书 App → **设置** → 底部获取 API Key（扫码或复制 `wrk-xxx`）。
 
-## 快速开始
+## Decision Guide
 
-```bash
-# 查看统计
-python3 scripts/export_weread_notes.py --stats
+| 用户需求 | 命令 | 说明 |
+|----------|------|------|
+| 查看导出统计 | `python3 scripts/export_weread_notes.py --stats` | 总书数、划线数、想法数 |
+| 批量导出全部 | `python3 scripts/export_weread_notes.py --all` | 全量导出所有有笔记的书 |
+| 导出单本书 | `python3 scripts/export_weread_notes.py --book "书名"` | 按书名或 bookId |
+| 查看最近更新 | `python3 scripts/export_weread_notes.py --recent` | 最近 7 天更新过的书 |
+| 列出所有有笔记的书 | `python3 scripts/export_weread_notes.py --list` | 书名、bookId、笔记数 |
+| 每日增量同步 | cron job: `python3 scripts/daily_sync_weread.py` | 自动筛选 48h 内有更新的书 |
 
-# 导出一本书
-python3 scripts/export_weread_notes.py --book "原则"
-
-# 导出全部
-python3 scripts/export_weread_notes.py --all
-```
-
-## 命令参考
-
-| 命令 | 说明 |
-|------|------|
-| `--stats` | 统计：有笔记的书总数、划线数、笔记数、想法数 |
-| `--list` | 列出所有有笔记的书 |
-| `--recent` | 查看最近 7 天更新过的书 |
-| `--book <书名/ID>` | 按书名或 bookId 导出单本 |
-| `--all` | 全量导出所有有笔记的书 |
-
-## 输出目录
-
-默认输出到 `~/.weread-notes/`，可通过 `WEREAD_NOTES_DIR` 环境变量自定义。
-
-## 输出格式
+## 导出格式
 
 ```markdown
 # 《原则》读书笔记
@@ -89,17 +71,18 @@ python3 scripts/export_weread_notes.py --all
 - 🏷️ **安全文件名** — 自动替换 `:`、`|` 等特殊字符
 - 🔗 **同名合并** — 同名不同作者的书分别保存
 
+## 输出目录
+
+默认输出到 `~/.weread-notes/`，可通过 `WEREAD_NOTES_DIR` 环境变量自定义。
+
 ## 每日自动同步
 
 ```bash
 # 添加到 crontab（每天早上 7 点）
-# npx skills add 安装:
-0 7 * * * cd ~/.agents/skills/weread-notes-export && python3 scripts/daily_sync_weread.py
-# 手动安装（替换为实际路径）:
-# 0 7 * * * cd /path/to/weread-notes-export && python3 scripts/daily_sync_weread.py
+0 7 * * * cd /path/to/weread-notes-export && python3 scripts/daily_sync_weread.py
 ```
 
-同步脚本会筛选最近 48 小时内有更新的书自动导出，已有的书不会重复处理。
+同步脚本筛选最近 48 小时内有更新的书自动导出，已有的书不会重复处理。
 
 ## 脚本说明
 
@@ -112,15 +95,13 @@ python3 scripts/export_weread_notes.py --all
 ## 操作规范与陷阱
 
 ### API 分页
-`/user/notebooks` 默认只返回 200 条，但用户可能有上千本有笔记的书。
-**必须**传 `count: 2000` 并用 `totalBookCount + hasMore` 做回退兜底。
+`/user/notebooks` 默认只返回 200 条，但用户可能有上千本有笔记的书。**必须**传 `count: 2000` 并用 `totalBookCount + hasMore` 做回退兜底。
 
 ### 章节树过滤
 构建章节树时，只过滤 `uid <= 2`（封面 uid=1，版权页 uid=2），保留 uid≥3 的内容章节。
 
 ### 同名书合并
-同名不同作者的书：同作者按章节合并，不同作者分别保存为 `书名（作者）.md`。
-作者名比较支持子串匹配（"毛姆" ⊂ "威廉·萨默赛特·毛姆"）。
+同名不同作者的书：同作者按章节合并，不同作者分别保存为 `书名（作者）.md`。作者名比较支持子串匹配。
 
 ### 安全文件名
 | 字符 | 替换为 | 原因 |
@@ -135,4 +116,3 @@ python3 scripts/export_weread_notes.py --all
 ### 分隔线格式
 - 带评论的划线 → 划线+评论为一个整体，分隔线在评论下方
 - 章节标题前 → 不加分隔线，只留空行
-
