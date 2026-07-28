@@ -1,5 +1,7 @@
 # 📚 WeRead Notes Export — 微信读书笔记导出 Skill
 
+[![skills.sh](https://skills.sh/b/dongwei6688/weread-notes-export-skill)](https://skills.sh/dongwei6688/weread-notes-export-skill)
+
 把微信读书的**划线（书签）**和**想法（评论/批注）**按**章节树**导出为本地结构化 Markdown 文件。支持增量同步、同名合并、安全文件名。
 
 ## ✨ 亮点
