@@ -1,28 +1,31 @@
 # 📚 WeRead Notes Export — 微信读书笔记导出 Skill
 
-把微信读书的**划线（书签）** 和**想法（评论/批注）** 按**章节树**导出为本地结构化 Markdown 文件。适配 Hermes Agent，支持增量同步、同名合并、安全文件名。
-
----
+把微信读书的**划线（书签）**和**想法（评论/批注）**按**章节树**导出为本地结构化 Markdown 文件。支持增量同步、同名合并、安全文件名。
 
 ## ✨ 亮点
 
 ### 🎯 按章节树组织，不是简单平铺
-从 API 获取书籍的完整章节结构，每条划线自动归入所属章节。一本书的笔记就是一个**有层次的 Markdown 文件**，而不是一长串无序的内容。
+从 API 获取书籍的完整章节结构，每条划线自动归入所属章节。一本书的笔记就是一个**有层次的 Markdown 文件**。
 
 ### 🔗 同名不同作者，自动分开保存
-微信读书上同名书不少。本 Skill 会自动检测作者是否一致——同作者合并，不同作者分别保存为 `书名（作者）.md`，不会混在一起。
+同作者合并，不同作者分别保存为 `书名（作者）.md`，不会混在一起。
 
 ### 🛡️ 安全文件名处理
-书名中的 `:`、`|`、`/`、`\` 等特殊字符自动替换为兼容字符，**Windows / Linux / macOS 全平台通用**，不会因为文件名非法导致同步失败。
+书名中的特殊字符自动替换为兼容字符，**Windows / Linux / macOS 全平台通用**。
 
 ### 📏 条目间自动加分隔线
-每条划线之间自动插入 `---` 分隔线，带评论的划线+评论作为一个整体，视觉层次清晰，一目了然。
+每条划线之间自动插入 `---` 分隔线，带评论的划线+评论作为一个整体。
 
 ### ⏰ 增量同步，适合每日 cron
-只需跑一次 `--all` 全量导出，之后设个 cron 每天自动增量同步，只导出最近 48 小时内有更新的书。
+跑一次 `--all` 全量导出后设个 cron 每天增量同步，只导出最近 48 小时内有更新的书。
 
 ### 🐍 零外部依赖
 纯 Python 3 标准库（`urllib` + `json`），无需 `pip install` 任何包。有 Python 就行。
+
+### 🚀 跨平台安装（已上架 skills.sh）
+```bash
+npx skills add dongwei6688/weread-notes-export-skill
+```
 
 ---
 
@@ -30,9 +33,9 @@
 
 ### 1. 获取 API Key
 
-打开 https://weread.qq.com/r/weread-skills → 点击 **获取 API Key** → 微信扫码登录 → 复制 Key。
+打开 https://weread.qq.com/r/weread-skills → 点击**获取 API Key** → 微信扫码登录 → 复制 Key。
 
-也可以在微信读书 App → **设置** → 底部获取 **API Key**（扫码或复制 `wrk-xxx`）。
+或在微信读书 App → **设置** → 底部获取 API Key（扫码或复制 `wrk-xxx`）。
 
 ```bash
 export WEREAD_API_KEY=wrk-xxxxxxxx
@@ -40,27 +43,33 @@ export WEREAD_API_KEY=wrk-xxxxxxxx
 
 ### 2. 安装 Skill
 
+**推荐（跨平台，自动注册到 75+ Agent）：**
+
 ```bash
-git clone https://github.com/dongwei6688/weread-notes-export-skill
+npx skills add dongwei6688/weread-notes-export-skill
 ```
 
-然后把目录放进你 Agent 的 skills 目录（如 `~/.hermes/skills/`、`~/.openclaw/skills/` 等），
-或直接对 Agent 说：**"帮我安装这个 skill"**。
+**手动安装：**
+
+```bash
+git clone https://github.com/dongwei6688/weread-notes-export-skill.git
+# 把目录放进 Agent 的 skills 目录即可
+```
 
 ### 3. 导出笔记
 
 ```bash
 # 查看统计
-python3 ~/.hermes/skills/weread-notes-export/scripts/export_weread_notes.py --stats
+python3 scripts/export_weread_notes.py --stats
 
 # 导出一本书
-python3 ~/.hermes/skills/weread-notes-export/scripts/export_weread_notes.py --book "原则"
+python3 scripts/export_weread_notes.py --book "原则"
 
 # 导出全部
-python3 ~/.hermes/skills/weread-notes-export/scripts/export_weread_notes.py --all
+python3 scripts/export_weread_notes.py --all
 
 # 查看最近更新的书
-python3 ~/.hermes/skills/weread-notes-export/scripts/export_weread_notes.py --recent
+python3 scripts/export_weread_notes.py --recent
 ```
 
 ---
@@ -119,20 +128,13 @@ python3 ~/.hermes/skills/weread-notes-export/scripts/export_weread_notes.py --re
 ```bash
 # 添加到 crontab（每天早上 7 点）
 0 7 * * * cd /path/to/skill/scripts && python3 daily_sync_weread.py
-
-# 或使用 Hermes cron
-hermes cron create --schedule "0 7 * * *" \
-  --prompt "运行每日微信读书笔记同步" \
-  --skills weread-notes-export
 ```
 
-同步脚本会筛选最近 48 小时内有更新的书自动导出，已有的书不会重复处理。
+同步脚本筛选最近 48 小时内有更新的书自动导出，已有的书不会重复处理。
 
 ---
 
 ## 同名书合并策略
-
-微信读书中同一本书可能存在多个版本（不同出版社/译者），本 Skill 的策略是：
 
 1. **同作者** → 按章节合并，保留两个版本的笔记内容
 2. **不同作者** → 分别保存为 `书名（作者A）.md` 和 `书名（作者B）.md`
@@ -151,17 +153,15 @@ hermes cron create --schedule "0 7 * * *" \
 
 ## 跨平台兼容
 
-本 Skill 使用标准的 **SKILL.md** 格式，兼容以下平台：
+本 Skill 已上架 [skills.sh](https://www.skills.sh) 生态。通过环境变量配置，不硬编码平台路径，支持：
 
 | 平台 | 说明 |
 |------|------|
 | 🤖 Hermes Agent | 完整支持 |
-| 🦎 OpenClaw | 完整支持（已配 OpenClaw 元数据） |
+| 🦎 OpenClaw | 完整支持 |
 | 💼 Workbuddy | 支持 SKILL.md 格式 |
 | 🟢 Claude Code | 支持 SKILL.md 格式 |
 | 🔵 Codex / Cursor | 支持 SKILL.md 格式 |
-
-所有平台的安装方式一致：将仓库放进 skills 目录，或在 Agent 中说一句"帮我安装这个 skill"。
 
 ---
 
@@ -169,7 +169,7 @@ hermes cron create --schedule "0 7 * * *" \
 
 ```
 weread-notes-export/
-├── SKILL.md                          # Hermes 技能清单
+├── SKILL.md                          # 技能定义
 ├── scripts/
 │   ├── export_weread_notes.py        # 🎯 核心导出引擎
 │   ├── daily_sync_weread.py          # 每日增量同步
