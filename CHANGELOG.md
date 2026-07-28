@@ -1,5 +1,10 @@
 # 更新日志
 
+## v1.2.1 (2026-07-28)
+
+### Fixed
+- **开发产物清理**：删除 crontab 节中的路径占位符 `/path/to/weread-notes-export`
+
 ## v1.2.0 (2026-07-28)
 
 ### Changed

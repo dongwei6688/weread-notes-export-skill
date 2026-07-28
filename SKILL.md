@@ -1,7 +1,7 @@
 ---
 name: weread-notes-export
 description: 微信读书笔记导出 — 按章节组织划线/评论，支持同名合并、安全文件名、每日同步
-version: 1.2.0
+version: 1.2.1
 homepage: https://github.com/dongwei6688/weread-notes-export-skill
 license: MIT
 metadata:
@@ -62,7 +62,7 @@ API Key 获取方式：打开 https://weread.qq.com/r/weread-skills → 获取 A
 ## 每日自动同步
 
 ```bash
-0 7 * * * cd /path/to/weread-notes-export && python3 scripts/daily_sync_weread.py
+0 7 * * * cd <skills_dir> && python3 scripts/daily_sync_weread.py
 ```
 筛选最近 48 小时内有更新的书自动导出，已有的书不会重复处理。
 
