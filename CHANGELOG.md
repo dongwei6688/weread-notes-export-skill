@@ -1,5 +1,11 @@
-## v1.2.3 (2026-07-28)
+## v1.2.4 (2026-07-28)
 
+### Changed
+- 决策表移至配置前（Overview → Decision Guide → 配置，对齐 docx）
+- 错误处理表操作指令具体化（不再写"检查配置"，写检错命令）
+- crontab 路径改为 `~/.agents/skills/weread-notes-export`
+
+## v1.2.3 (2026-07-28)
 ### Changed
 - YAML 精简至 3 字段（name+description+license），对齐 anthropics 标准
 - 标题改为纯英文 `# WeRead Notes Export`

@@ -12,12 +12,6 @@ license: MIT
 
 通过微信读书官方 API 将书籍笔记完整导出。核心能力：按章节树归类（非简单平铺）、4 策略评论匹配、同名不同作者分别保存、全平台安全文件名。纯 Python 3 标准库，零外部依赖。
 
-## 配置
-
-```bash
-export WEREAD_API_KEY=wrk-xxxxxxxx
-```
-
 ## Decision Guide
 
 | 用户需求 | 命令 |
@@ -28,6 +22,12 @@ export WEREAD_API_KEY=wrk-xxxxxxxx
 | 查看最近更新 | `python3 scripts/export_weread_notes.py --recent` |
 | 列出所有有笔记的书 | `python3 scripts/export_weread_notes.py --list` |
 | 每日增量同步 | `python3 scripts/daily_sync_weread.py` |
+
+## 配置
+
+```bash
+export WEREAD_API_KEY=wrk-xxxxxxxx
+```
 
 ## 导出格式
 
@@ -132,7 +132,7 @@ for book in books:
 ## 每日自动同步
 
 ```bash
-0 7 * * * cd <skills_dir> && python3 scripts/daily_sync_weread.py
+0 7 * * * cd ~/.agents/skills/weread-notes-export && python3 scripts/daily_sync_weread.py
 ```
 筛选 48h 内有更新的书自动导出，不重复处理已有笔记。
 
@@ -140,8 +140,8 @@ for book in books:
 
 | 错误 | 原因 | 处理 |
 |------|------|------|
-| `WEREAD_API_KEY` 未设置 | 环境变量缺失 | 检查配置 |
-| API 返回 401 | Key 过期或无效 | 重新获取 Key |
-| `chapterUid` 为空 | 旧版微信读书接口变化 | 仅用 chapterName 匹配 |
-| 文件写入失败 | 权限/磁盘满 | 检查 `WEREAD_NOTES_DIR` 目录权限 |
-| 同作者名不同写法 | 同一作者出现"王小波"和"小波" | 子串匹配比 `==` 更宽容 |
+| `WEREAD_API_KEY` 未设置 | 环境变量缺失 | `echo $WEREAD_API_KEY` 检查，如空则设置 |
+| API 返回 401 | Key 过期或无效 | 到 https://weread.qq.com/r/weread-skills 重新扫码获取 Key |
+| `chapterUid` 为空 | 旧版微信读书接口变化 | 降级为仅用 `chapterName` 匹配；跳过该条评论的其他策略 |
+| 文件写入失败 | 权限/磁盘满 | `ls -la $WEREAD_NOTES_DIR` 检查权限；`df -h` 检查磁盘 |
+| 同作者名不同写法 | 同一作者出现"王小波"和"小波" | 用子串匹配 `author_a in author_b or author_b in author_a` |
