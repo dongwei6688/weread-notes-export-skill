@@ -3,6 +3,13 @@ name: weread-notes-export
 description: 微信读书笔记导出 — 按章节组织划线/评论，支持同名合并、分隔线格式、每日同步
 version: 1.0.0
 homepage: https://github.com/dongwei6688/weread-notes-export-skill
+metadata:
+  openclaw:
+    emoji: 📚
+    requires:
+      bins:
+        - python3
+    install: []
 ---
 
 # WeRead Notes Export — 微信读书笔记导出 Skill

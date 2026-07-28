@@ -148,6 +148,22 @@ hermes cron create --schedule "0 7 * * *" \
 
 ---
 
+## 跨平台兼容
+
+本 Skill 使用标准的 **SKILL.md** 格式，兼容以下平台：
+
+| 平台 | 说明 |
+|------|------|
+| 🤖 Hermes Agent | 完整支持 |
+| 🦎 OpenClaw | 完整支持（已配 OpenClaw 元数据） |
+| 💼 Workbuddy | 支持 SKILL.md 格式 |
+| 🟢 Claude Code | 支持 SKILL.md 格式 |
+| 🔵 Codex / Cursor | 支持 SKILL.md 格式 |
+
+所有平台的安装方式一致：将仓库放进 skills 目录，或在 Agent 中说一句"帮我安装这个 skill"。
+
+---
+
 ## 项目结构
 
 ```
