@@ -108,7 +108,10 @@ python3 scripts/export_weread_notes.py --all
 
 ```bash
 # 添加到 crontab（每天早上 7 点）
-0 7 * * * cd /path/to/skill && python3 scripts/daily_sync_weread.py
+# npx skills add 安装:
+0 7 * * * cd ~/.agents/skills/weread-notes-export && python3 scripts/daily_sync_weread.py
+# 手动安装（替换为实际路径）:
+# 0 7 * * * cd /path/to/weread-notes-export && python3 scripts/daily_sync_weread.py
 ```
 
 同步脚本会筛选最近 48 小时内有更新的书自动导出，已有的书不会重复处理。
