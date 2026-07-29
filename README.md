@@ -1,6 +1,7 @@
 # 📚 WeRead Notes Export — 微信读书笔记导出 Skill
 
 [![skills.sh](https://skills.sh/b/dongwei6688/weread-notes-export-skill)](https://skills.sh/dongwei6688/weread-notes-export-skill)
+[![GitHub release](https://img.shields.io/github/v/release/dongwei6688/weread-notes-export-skill)](https://github.com/dongwei6688/weread-notes-export-skill/releases)
 
 把微信读书的**划线（书签）**和**想法（评论/批注）**按**章节树**导出为本地结构化 Markdown 文件。支持增量同步、同名合并、安全文件名。
 
@@ -17,6 +18,9 @@
 
 ### 条目间自动加分隔线
 每条划线之间自动插入 `---` 分隔线，带评论的划线+评论作为一个整体。
+
+### Markdown 格式化
+format_notes.py 对导出结果做行间距优化和格式统一
 
 ### 增量同步，适合每日 cron
 跑一次 `--all` 全量导出后设个 cron 每天增量同步，只导出最近 48 小时内有更新的书。
@@ -67,6 +71,10 @@ python3 scripts/export_weread_notes.py --all
 
 # 查看最近更新的书
 python3 scripts/export_weread_notes.py --recent
+
+# 指定输出格式（markdown/json）
+python3 scripts/export_weread_notes.py --book "书名" --format markdown
+python3 scripts/export_weread_notes.py --book "书名" --format json
 ```
 
 ---
@@ -116,6 +124,7 @@ python3 scripts/export_weread_notes.py --recent
 | `--list` | 列出所有有笔记的书及其划线/笔记/想法数量 |
 | `--recent` | 查看最近 7 天更新过的书 |
 | `--book <书名/ID>` | 按书名或 bookId 导出单本 |
+| `--format <格式>` | 指定输出格式：`markdown`（默认）或 `json` |
 | `--all` | 全量导出所有有笔记的书 |
 
 ---
@@ -128,6 +137,15 @@ python3 scripts/export_weread_notes.py --recent
 0 7 * * * cd ~/.agents/skills/weread-notes-export/scripts && python3 daily_sync_weread.py
 # 手动安装（替换为实际路径）:
 # 0 7 * * * cd /path/to/skill/scripts && python3 daily_sync_weread.py
+```
+
+或者直接使用环境变量方式：
+
+```bash
+# 每天 7:00 自动增量同步（需要保持 WEREAD_API_KEY 环境变量）
+crontab -e
+# 添加：
+0 7 * * * export WEREAD_API_KEY=wrk-xxx && cd /path/to/weread-notes-export-skill && python3 scripts/daily_sync_weread.py
 ```
 
 同步脚本筛选最近 48 小时内有更新的书自动导出，已有的书不会重复处理。
@@ -151,6 +169,17 @@ python3 scripts/export_weread_notes.py --recent
 
 ---
 
+## 常见问题
+
+| 问题 | 原因 | 解决 |
+|------|------|------|
+| `API_KEY 未设置` | 未配置环境变量 | `export WEREAD_API_KEY=wrk-xxx` |
+| `请求太频繁` | API 限流 | 等待 10 秒后重试 |
+| `书名未找到` | 书名不精确 | 用 --list 先查看准确书名 |
+| 文件写入失败 | 权限/磁盘满 | `df -h` 检查磁盘 |
+
+---
+
 ## 跨平台兼容
 
 本 Skill 已上架 [skills.sh](https://www.skills.sh) 生态。通过环境变量配置，不硬编码平台路径，支持：
@@ -168,8 +197,12 @@ python3 scripts/export_weread_notes.py --recent
 ## 项目结构
 
 ```
-weread-notes-export/
-├── SKILL.md                          # 技能定义
+weread-notes-export-skill/
+├── .gitignore
+├── CHANGELOG.md
+├── LICENSE
+├── README.md
+├── SKILL.md
 ├── scripts/
 │   ├── export_weread_notes.py        # 🎯 核心导出引擎
 │   ├── daily_sync_weread.py          # 每日增量同步

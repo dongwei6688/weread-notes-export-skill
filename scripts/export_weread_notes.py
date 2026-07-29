@@ -21,7 +21,7 @@ from collections import OrderedDict
 
 # ── 配置 ──────────────────────────────────────────────────────────────
 API_URL = "https://i.weread.qq.com/api/agent/gateway"
-SKILL_VERSION = "1.0.0"
+SKILL_VERSION = "1.2.4"
 
 # 输出目录：优先读环境变量，默认 ~/.weread-notes/
 DEFAULT_NOTES_DIR = Path.home() / ".weread-notes"
