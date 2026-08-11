@@ -14,14 +14,14 @@
   WEREAD_API_KEY    必需，微信读书 API Key，格式 wrk-xxx
   WEREAD_NOTES_DIR  可选，输出目录（默认 ~/.weread-notes/）
 """
-import json, os, sys, time, urllib.request
+import json, os, re, sys, time, urllib.request
 from pathlib import Path
 from datetime import datetime
 from collections import OrderedDict
 
 # ── 配置 ──────────────────────────────────────────────────────────────
 API_URL = "https://i.weread.qq.com/api/agent/gateway"
-SKILL_VERSION = "1.2.6"
+SKILL_VERSION = "1.2.7"
 
 # 输出目录：优先读环境变量，默认 ~/.weread-notes/
 DEFAULT_NOTES_DIR = Path.home() / ".weread-notes"
@@ -283,7 +283,9 @@ def export_book(book_info):
                 lines.append(f"> {flatten_multi_line(item['text'])}")
                 lines.append("")
                 if "comment" in item:
-                    lines.append(f"💬 {item['comment']}")
+                    # 评论内空行压缩为单换行：避免解析器把空行当评论结束，导致后续行落 loose_text
+                    comment = re.sub(r"\n\s*\n+", "\n", item["comment"].strip())
+                    lines.append(f"💬 {comment}")
                     lines.append("")
                 if not is_last:
                     lines.append("---")
@@ -292,7 +294,9 @@ def export_book(book_info):
                 if item["abstract"]:
                     lines.append(f"> {flatten_multi_line(item['abstract'])}")
                     lines.append("")
-                lines.append(f"💬 {item['content']}")
+                # 评论内空行压缩为单换行：避免解析器把空行当评论结束，导致后续行落 loose_text
+                content = re.sub(r"\n\s*\n+", "\n", item["content"].strip())
+                lines.append(f"💬 {content}")
                 lines.append("")
                 if not is_last:
                     lines.append("---")
