@@ -3,15 +3,18 @@
 [![skills.sh](https://skills.sh/b/dongwei6688/weread-notes-export-skill)](https://skills.sh/dongwei6688/weread-notes-export-skill)
 [![GitHub release](https://img.shields.io/github/v/release/dongwei6688/weread-notes-export-skill)](https://github.com/dongwei6688/weread-notes-export-skill/releases)
 
-把微信读书的**划线（书签）**和**想法（评论/批注）**按**章节树**导出为本地结构化 Markdown 文件。支持增量同步、同名合并、安全文件名。
+把微信读书的**划线（书签）**和**想法（评论/批注）**按**章节树**导出为本地结构化 Markdown 文件。支持增量同步、安全文件名、多行内容健壮处理。
 
 ## ✨ 亮点
 
 ### 按章节树组织，不是简单平铺
 从 API 获取书籍的完整章节结构，每条划线自动归入所属章节。一本书的笔记就是一个**有层次的 Markdown 文件**。
 
-### 同名不同作者，自动分开保存
-同作者合并，不同作者分别保存为 `书名（作者）.md`，不会混在一起。
+### 同名书按书名保存
+笔记文件按书名保存（`书名.md`），全平台安全文件名处理。同名不同版本的书（如不同译者）共享同一文件。
+
+### 多行内容健壮处理
+多行划线（含署名行）压平为单行、评论内空行自动整理、Unicode 行分隔符（U+2028/U+2029）统一处理——导出文件干净、可被下游解析器逐行正确解析。
 
 ### 安全文件名处理
 书名中的特殊字符自动替换为兼容字符，**Windows / Linux / macOS 全平台通用**。
@@ -71,10 +74,6 @@ python3 scripts/export_weread_notes.py --all
 
 # 查看最近更新的书
 python3 scripts/export_weread_notes.py --recent
-
-# 指定输出格式（markdown/json）
-python3 scripts/export_weread_notes.py --book "书名" --format markdown
-python3 scripts/export_weread_notes.py --book "书名" --format json
 ```
 
 ---
@@ -124,7 +123,6 @@ python3 scripts/export_weread_notes.py --book "书名" --format json
 | `--list` | 列出所有有笔记的书及其划线/笔记/想法数量 |
 | `--recent` | 查看最近 7 天更新过的书 |
 | `--book <书名/ID>` | 按书名或 bookId 导出单本 |
-| `--format <格式>` | 指定输出格式：`markdown`（默认）或 `json` |
 | `--all` | 全量导出所有有笔记的书 |
 
 ---
@@ -152,11 +150,9 @@ crontab -e
 
 ---
 
-## 同名书合并策略
+## 同名书说明
 
-1. **同作者** → 按章节合并，保留两个版本的笔记内容
-2. **不同作者** → 分别保存为 `书名（作者A）.md` 和 `书名（作者B）.md`
-3. 作者简称自动匹配（如"毛姆"⊂"威廉·萨默赛特·毛姆"）
+笔记文件按书名保存（`书名.md`）。书架上同名不同版本的书（如不同译者的《1%法则》）导出时共享同一文件，后导出的会覆盖先导出的内容。如需保留多个版本，请将已有文件改名后重新导出。
 
 ---
 

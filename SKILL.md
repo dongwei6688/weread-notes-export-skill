@@ -1,16 +1,16 @@
 ---
 name: weread-notes-export
-description: 微信读书笔记导出 — 按章节组织划线/评论，支持同名合并、安全文件名、每日同步
+description: 微信读书笔记导出 — 按章节组织划线/评论，多行内容健壮处理，安全文件名，每日同步
 license: MIT
 ---
 
 # WeRead Notes Export
 
-把微信读书的**划线（书签）**和**想法（评论/批注）**按**章节树**导出为结构化 Markdown 文件。支持增量同步、同名合并、安全文件名。
+把微信读书的**划线（书签）**和**想法（评论/批注）**按**章节树**导出为结构化 Markdown 文件。支持增量同步、安全文件名、多行内容健壮处理。纯 Python 3 标准库，零外部依赖。
 
 ## Overview
 
-通过微信读书官方 API 将书籍笔记完整导出。核心能力：按章节树归类（非简单平铺）、4 策略评论匹配、同名不同作者分别保存、全平台安全文件名。纯 Python 3 标准库，零外部依赖。
+通过微信读书官方 API 将书籍笔记完整导出。核心能力：按章节树归类（非简单平铺）、4 策略评论匹配、多行划线/评论/Unicode 行分隔符健壮处理、全平台安全文件名。
 
 ## Decision Guide
 
@@ -50,7 +50,7 @@ export WEREAD_API_KEY=wrk-xxxxxxxx
 - 📏 **分隔线** — 条目间自动加 `---`
 - 💬 **评论跟随** — 划线+评论作为一个整体，分隔线在评论下方
 - 🏷️ **安全文件名** — `:`→`：`、`|`→`·`、`/`→`／`、`\`→`＼`
-- 🔗 **同名合并** — 同名不同作者的书分别保存，作者支持子串匹配
+- 📐 **多行处理** — 多行划线压平为单行（署名行不掉队）；评论内空行与 Unicode 行分隔符（U+2028/U+2029）自动整理，导出文件可被下游解析器逐行正确解析
 
 ## 关键算法
 
@@ -107,22 +107,11 @@ def match_comment(comment, chapters, chapter_tree):
     return fuzzy_match_in_tree(comment, chapter_tree)
 ```
 
-### 4. 同名书合并
+### 4. 输出文件名
 ```python
-# 同名不同作者 → 分别保存为 书名(作者).md
-files = {}
-for book in books:
-    key = (book["title"], book.get("author", ""))
-    if key in files:
-        files[key]["notes"].extend(book["notes"])
-    else:
-        # 作者名为子串匹配：如果已存在同书不同作者，区分
-        existing = [k for k in files if k[0] == book["title"]]
-        if existing and not is_same_author(existing[0][1], book.get("author", "")):
-            filename = f"{safe(book['title'])}（{safe(book['author'])}）.md"
-        else:
-            filename = f"{safe(book['title'])}.md"
-        files[key] = {"filename": filename, "notes": book["notes"]}
+# 按书名生成安全文件名；同名不同版本的书共享同一文件（后导出覆盖先导出）
+safe_name = make_safe_filename(title)
+output_path = NOTES_DIR / f"{safe_name}.md"
 ```
 
 ## 输出目录
@@ -144,4 +133,3 @@ for book in books:
 | API 返回 401 | Key 过期或无效 | 到 https://weread.qq.com/r/weread-skills 重新扫码获取 Key |
 | `chapterUid` 为空 | 旧版微信读书接口变化 | 降级为仅用 `chapterName` 匹配；跳过该条评论的其他策略 |
 | 文件写入失败 | 权限/磁盘满 | `ls -la $WEREAD_NOTES_DIR` 检查权限；`df -h` 检查磁盘 |
-| 同作者名不同写法 | 同一作者出现"王小波"和"小波" | 用子串匹配 `author_a in author_b or author_b in author_a` |
