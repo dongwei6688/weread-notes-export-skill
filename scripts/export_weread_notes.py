@@ -21,7 +21,7 @@ from collections import OrderedDict
 
 # ── 配置 ──────────────────────────────────────────────────────────────
 API_URL = "https://i.weread.qq.com/api/agent/gateway"
-SKILL_VERSION = "1.3.0"
+SKILL_VERSION = "1.3.1"
 
 # 输出目录：优先读环境变量，默认 ~/.weread-notes/
 DEFAULT_NOTES_DIR = Path.home() / ".weread-notes"
@@ -98,8 +98,9 @@ def get_reviews(book_id):
 
 
 # ── 核心导出逻辑 ────────────────────────────────────────────────────
-def export_book(book_info, output_json=False):
-    """导出一本书的完整笔记。output_json=True 时同时输出结构化 .json（供数据分析）。"""
+def export_book(book_info, output_json=False, json_only=False):
+    """导出一本书的完整笔记。
+    output_json=True 时同时输出结构化 .json（供数据分析）；json_only=True 时仅输出 .json 不写 .md。"""
     title = book_info.get("title", "未知书名")
     author = book_info.get("author", "")
     book_id = str(book_info.get("bookId", ""))
@@ -304,13 +305,14 @@ def export_book(book_info, output_json=False):
                     lines.append("---")
                     lines.append("")
 
-    # ── 写入 Markdown 文件 ──
+    # ── 写入 Markdown 文件（json_only 模式跳过 md）──
     NOTES_DIR.mkdir(parents=True, exist_ok=True)
     safe_name = make_safe_filename(title)
     output_path = NOTES_DIR / f"{safe_name}.md"
 
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines))
+    if not json_only:
+        with open(output_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines))
 
     # ── 可选：同时输出结构化 JSON（保留全字段，供数据分析；md 仍为人读产物）──
     if output_json:
@@ -387,17 +389,17 @@ def stats():
 
 
 # ── 导出全部 / 按书名查找 ──────────────────────────────────────────
-def export_all(output_json=False):
+def export_all(output_json=False, json_only=False):
     """导出全部"""
     books = get_notebooks()
     exported = 0
     for b in books:
-        if export_book(b.get("book", {}), output_json=output_json):
+        if export_book(b.get("book", {}), output_json=output_json, json_only=json_only):
             exported += 1
     print(f"\n✅ 导出完成：{exported}/{len(books)} 本书" + ("（含 JSON）" if output_json else ""))
 
 
-def export_by_title(keyword, output_json=False):
+def export_by_title(keyword, output_json=False, json_only=False):
     """按书名/ID 导出"""
     books = get_notebooks()
     for b in books:
@@ -405,7 +407,7 @@ def export_by_title(keyword, output_json=False):
         title = book.get("title", "")
         bid = str(book.get("bookId", ""))
         if keyword.lower() in title.lower() or keyword == bid:
-            export_book(book, output_json=output_json)
+            export_book(book, output_json=output_json, json_only=json_only)
             return
 
     # 书架没找到 → 搜书城
@@ -420,7 +422,7 @@ def export_by_title(keyword, output_json=False):
             rv = get_reviews(bid)
             if bm or rv:
                 fake_book = {"bookId": bid, "title": title}
-                export_book(fake_book, output_json=output_json)
+                export_book(fake_book, output_json=output_json, json_only=json_only)
                 return
             else:
                 print(f"  ⚠️ 找到《{title}》（{bid}），但无笔记数据")
@@ -437,15 +439,16 @@ if __name__ == "__main__":
         sys.exit(0)
 
     cmd = sys.argv[1]
-    output_json = "--json" in sys.argv[2:]
+    output_json = "--json" in sys.argv[2:] or "--json-only" in sys.argv[2:]
+    json_only = "--json-only" in sys.argv[2:]
     if cmd == "--list":
         list_books()
     elif cmd == "--recent":
         list_books(recent=True)
     elif cmd == "--all":
-        export_all(output_json=output_json)
+        export_all(output_json=output_json, json_only=json_only)
     elif cmd == "--book" and len(sys.argv) > 2:
-        export_by_title(sys.argv[2], output_json=output_json)
+        export_by_title(sys.argv[2], output_json=output_json, json_only=json_only)
     elif cmd == "--stats":
         stats()
     else:

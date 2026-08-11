@@ -19,3 +19,10 @@ Thumbs.db
 
 # Output (user data)
 output/
+
+# Local git hooks（不进开源包）
+scripts/pre-push.sh
+
+# Agent 本地配置
+.agents/
+skills-lock.json

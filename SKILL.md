@@ -22,7 +22,8 @@ license: MIT
 | 查看最近更新 | `python3 scripts/export_weread_notes.py --recent` |
 | 列出所有有笔记的书 | `python3 scripts/export_weread_notes.py --list` |
 | 导出并输出 JSON | `python3 scripts/export_weread_notes.py --all --json` |
-| 每日增量同步 | `python3 scripts/daily_sync_weread.py [--json]` |
+| 仅导出 JSON | `python3 scripts/export_weread_notes.py --all --json-only` |
+| 每日增量同步 | `python3 scripts/daily_sync_weread.py [--json] [--json-only]` |
 
 ## 配置
 

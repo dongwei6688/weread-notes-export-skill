@@ -132,6 +132,7 @@ python3 scripts/export_weread_notes.py --all --json
 | `--book <书名/ID>` | 按书名或 bookId 导出单本 |
 | `--all` | 全量导出所有有笔记的书 |
 | `--json` | 与 `--book`/`--all` 组合：同时输出结构化 `.json`（数据分析用） |
+| `--json-only` | 仅输出 `.json` 不写 `.md`（每日增量只产 JSON 时用） |
 
 ---
 
