@@ -21,7 +21,7 @@ from collections import OrderedDict
 
 # ── 配置 ──────────────────────────────────────────────────────────────
 API_URL = "https://i.weread.qq.com/api/agent/gateway"
-SKILL_VERSION = "1.2.7"
+SKILL_VERSION = "1.2.8"
 
 # 输出目录：优先读环境变量，默认 ~/.weread-notes/
 DEFAULT_NOTES_DIR = Path.home() / ".weread-notes"
@@ -67,8 +67,10 @@ def make_safe_filename(title):
 
 
 def flatten_multi_line(text):
-    """多行划线/摘要压成单行：换行替换为空格，避免署名行（如——威廉·詹姆斯）被拆成游离文本"""
-    return " ".join(part.strip() for part in text.split("\n") if part.strip())
+    """多行划线/摘要压成单行：换行与 Unicode 行分隔符（U+2028/U+2029）替换为空格。
+    避免 build.py 的 splitlines 把 U+2028 当换行拆行，导致划线被拆成游离文本"""
+    norm = text.replace("\u2028", "\n").replace("\u2029", "\n")
+    return " ".join(part.strip() for part in norm.split("\n") if part.strip())
 
 
 # ── 数据获取 ──────────────────────────────────────────────────────────
@@ -283,8 +285,8 @@ def export_book(book_info):
                 lines.append(f"> {flatten_multi_line(item['text'])}")
                 lines.append("")
                 if "comment" in item:
-                    # 评论内空行压缩为单换行：避免解析器把空行当评论结束，导致后续行落 loose_text
-                    comment = re.sub(r"\n\s*\n+", "\n", item["comment"].strip())
+                    # 评论内空行/Unicode 行分隔压缩为单换行：避免解析器把空行当评论结束，导致后续行落 loose_text
+                    comment = re.sub(r"\n\s*\n+", "\n", item["comment"].replace("\u2028", "\n").replace("\u2029", "\n").strip())
                     lines.append(f"💬 {comment}")
                     lines.append("")
                 if not is_last:
@@ -294,8 +296,8 @@ def export_book(book_info):
                 if item["abstract"]:
                     lines.append(f"> {flatten_multi_line(item['abstract'])}")
                     lines.append("")
-                # 评论内空行压缩为单换行：避免解析器把空行当评论结束，导致后续行落 loose_text
-                content = re.sub(r"\n\s*\n+", "\n", item["content"].strip())
+                # 评论内空行/Unicode 行分隔压缩为单换行：避免解析器把空行当评论结束，导致后续行落 loose_text
+                content = re.sub(r"\n\s*\n+", "\n", item["content"].replace("\u2028", "\n").replace("\u2029", "\n").strip())
                 lines.append(f"💬 {content}")
                 lines.append("")
                 if not is_last:
