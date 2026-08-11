@@ -21,7 +21,7 @@ from collections import OrderedDict
 
 # ── 配置 ──────────────────────────────────────────────────────────────
 API_URL = "https://i.weread.qq.com/api/agent/gateway"
-SKILL_VERSION = "1.4.1"
+SKILL_VERSION = "1.4.2"
 
 # 输出目录：优先读环境变量，默认 ~/.weread-notes/
 DEFAULT_NOTES_DIR = Path.home() / ".weread-notes"
@@ -114,11 +114,13 @@ def export_book(book_info, output_json=False, json_only=False):
         print("跳过（无内容）")
         return False
 
-    # ── 封面（真实 bookId → 微信读书 CDN 高清封面；失败静默，不阻塞导出）──
+    # ── 封面 + 原文链接（真实 bookId → 微信读书 CDN 封面 / 网页版 deepLink；失败静默，不阻塞导出）──
     cover = ""
+    deep_link = ""
     try:
         info = api_call("/book/info", {"bookId": book_id})
         cover = info.get("cover", "") or ""
+        deep_link = info.get("deepLink", "") or ""
     except Exception:
         cover = ""
 
@@ -329,7 +331,7 @@ def export_book(book_info, output_json=False, json_only=False):
         json_path = NOTES_DIR / json_name
         payload = {
             "version": 1,
-            "book": {"id": book_id, "title": title, "author": author, "cover": cover},
+            "book": {"id": book_id, "title": title, "author": author, "cover": cover, "deepLink": deep_link},
             "exported_at": datetime.now().isoformat(timespec="seconds"),
             "chapters": [
                 {"path": ch_name, "items": items}

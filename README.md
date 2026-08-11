@@ -17,7 +17,7 @@
 多行划线（含署名行）压平为单行、评论内空行自动整理、Unicode 行分隔符（U+2028/U+2029）统一处理——导出文件干净、可被下游解析器逐行正确解析。
 
 ### 结构化 JSON 导出（数据分析友好）
-加 `--json` 参数，同一次导出同时产出 `.md`（人读）+ `.json`（结构化，保留划线 range、评论原始多行内容、独立想法 abstract、**微信 CDN 封面 URL** 等全字段）。**JSON 文件名 = 真实 bookId**（`{bookId}.json`），同名书不再互相覆盖。数据分析直接用 JSON，无需解析 Markdown。
+加 `--json` 参数，同一次导出同时产出 `.md`（人读）+ `.json`（结构化，保留划线 range、评论原始多行内容、独立想法 abstract、**微信 CDN 封面 URL、网页版 deepLink 链接** 等全字段）。**JSON 文件名 = 真实 bookId**（`{bookId}.json`），同名书不再互相覆盖。数据分析直接用 JSON，无需解析 Markdown。
 
 ### 安全文件名处理
 书名中的特殊字符自动替换为兼容字符，**Windows / Linux / macOS 全平台通用**。
