@@ -21,7 +21,7 @@ from collections import OrderedDict
 
 # ── 配置 ──────────────────────────────────────────────────────────────
 API_URL = "https://i.weread.qq.com/api/agent/gateway"
-SKILL_VERSION = "1.2.4"
+SKILL_VERSION = "1.2.6"
 
 # 输出目录：优先读环境变量，默认 ~/.weread-notes/
 DEFAULT_NOTES_DIR = Path.home() / ".weread-notes"
@@ -64,6 +64,11 @@ def make_safe_filename(title):
     safe = safe.replace(":", "：")
     safe = safe.replace("|", "·")
     return safe
+
+
+def flatten_multi_line(text):
+    """多行划线/摘要压成单行：换行替换为空格，避免署名行（如——威廉·詹姆斯）被拆成游离文本"""
+    return " ".join(part.strip() for part in text.split("\n") if part.strip())
 
 
 # ── 数据获取 ──────────────────────────────────────────────────────────
@@ -275,7 +280,7 @@ def export_book(book_info):
         for idx, item in enumerate(items):
             is_last = (idx == len(items) - 1)
             if item["type"] == "bookmark":
-                lines.append(f"> {item['text']}")
+                lines.append(f"> {flatten_multi_line(item['text'])}")
                 lines.append("")
                 if "comment" in item:
                     lines.append(f"💬 {item['comment']}")
@@ -285,7 +290,7 @@ def export_book(book_info):
                     lines.append("")
             elif item["type"] == "review_only":
                 if item["abstract"]:
-                    lines.append(f"> {item['abstract']}")
+                    lines.append(f"> {flatten_multi_line(item['abstract'])}")
                     lines.append("")
                 lines.append(f"💬 {item['content']}")
                 lines.append("")

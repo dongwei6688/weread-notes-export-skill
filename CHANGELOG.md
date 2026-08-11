@@ -1,3 +1,19 @@
+# 更新日志
+
+## v1.2.6 (2026-08-11)
+
+### Fixed
+- **多行划线署名行掉队**：划线文本含换行时（如引文末尾带"——威廉·詹姆斯"），旧逻辑只给首行加 `>` 前缀，署名行变成游离文本。新增 `flatten_multi_line()` 将多行划线/摘要压成单行（换行 → 空格），bookmark 与 review_only 分支均生效
+- **脚本版本号残留**：`SKILL_VERSION` 从 1.0.0 同步至 1.2.6（此前未随 CHANGELOG 更新）
+
+## v1.2.5 (2026-07-29)
+
+### Fixed
+- 修复 LICENSE 文件内容损坏问题
+- README 增加版本徽章
+- 修复仓库名称一致性
+- 完善目录结构（含 format_notes.py）
+
 ## v1.2.4 (2026-07-28)
 
 ### Changed
@@ -10,8 +26,6 @@
 - YAML 精简至 3 字段（name+description+license），对齐 anthropics 标准
 - 标题改为纯英文 `# WeRead Notes Export`
 - 新增 `## Overview` 概览节
-
-# 更新日志
 
 ## v1.2.2 (2026-07-28)
 
