@@ -1,5 +1,10 @@
 # 更新日志
 
+## v1.3.0 (2026-08-11)
+
+### 新增
+- **`--json` 结构化导出**：`--book/--all/--json` 或 `daily_sync_weread.py --json` 时同时输出 `.json`（schema v1：书元信息 + 章节路径 + 划线/评论条目）。JSON 保留 md 中丢失的信息（划线 range、评论原始多行内容、独立想法 abstract），数据分析直接用 JSON 无需解析 Markdown；默认行为不变（仍输出 .md）
+
 ## v1.2.9 (2026-08-11)
 
 ### Docs

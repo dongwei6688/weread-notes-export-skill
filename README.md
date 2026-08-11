@@ -16,6 +16,9 @@
 ### 多行内容健壮处理
 多行划线（含署名行）压平为单行、评论内空行自动整理、Unicode 行分隔符（U+2028/U+2029）统一处理——导出文件干净、可被下游解析器逐行正确解析。
 
+### 结构化 JSON 导出（数据分析友好）
+加 `--json` 参数，同一次导出同时产出 `.md`（人读）+ `.json`（结构化，保留划线 range、评论原始多行内容、独立想法 abstract 等全字段）。数据分析直接用 JSON，无需解析 Markdown。
+
 ### 安全文件名处理
 书名中的特殊字符自动替换为兼容字符，**Windows / Linux / macOS 全平台通用**。
 
@@ -74,6 +77,10 @@ python3 scripts/export_weread_notes.py --all
 
 # 查看最近更新的书
 python3 scripts/export_weread_notes.py --recent
+
+# 同时导出结构化 JSON（数据分析用）
+python3 scripts/export_weread_notes.py --book "原则" --json
+python3 scripts/export_weread_notes.py --all --json
 ```
 
 ---
@@ -124,6 +131,7 @@ python3 scripts/export_weread_notes.py --recent
 | `--recent` | 查看最近 7 天更新过的书 |
 | `--book <书名/ID>` | 按书名或 bookId 导出单本 |
 | `--all` | 全量导出所有有笔记的书 |
+| `--json` | 与 `--book`/`--all` 组合：同时输出结构化 `.json`（数据分析用） |
 
 ---
 

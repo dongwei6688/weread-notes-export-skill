@@ -21,7 +21,8 @@ license: MIT
 | 导出单本书 | `python3 scripts/export_weread_notes.py --book "书名"` |
 | 查看最近更新 | `python3 scripts/export_weread_notes.py --recent` |
 | 列出所有有笔记的书 | `python3 scripts/export_weread_notes.py --list` |
-| 每日增量同步 | `python3 scripts/daily_sync_weread.py` |
+| 导出并输出 JSON | `python3 scripts/export_weread_notes.py --all --json` |
+| 每日增量同步 | `python3 scripts/daily_sync_weread.py [--json]` |
 
 ## 配置
 
@@ -51,6 +52,7 @@ export WEREAD_API_KEY=wrk-xxxxxxxx
 - 💬 **评论跟随** — 划线+评论作为一个整体，分隔线在评论下方
 - 🏷️ **安全文件名** — `:`→`：`、`|`→`·`、`/`→`／`、`\`→`＼`
 - 📐 **多行处理** — 多行划线压平为单行（署名行不掉队）；评论内空行与 Unicode 行分隔符（U+2028/U+2029）自动整理，导出文件可被下游解析器逐行正确解析
+- 🧩 **JSON 导出** — `--json` 同时输出结构化 `.json`：保留划线 range、评论原始多行内容、独立想法 abstract 等全字段，数据分析无需解析 Markdown
 
 ## 关键算法
 

@@ -4,7 +4,10 @@
 适用于 cron 定时调度。
 
 用法：
-  python3 daily_sync_weread.py
+  python3 daily_sync_weread.py [--json]
+
+选项：
+  --json   同时输出结构化 .json（供数据分析）
 
 环境变量：
   WEREAD_API_KEY    必需，微信读书 API Key
@@ -20,7 +23,8 @@ from export_weread_notes import api_call, export_book, NOTES_DIR
 
 
 def main():
-    print(f"📚 读书小记每日同步 — {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    output_json = "--json" in sys.argv[1:]
+    print(f"📚 读书小记每日同步 — {datetime.now().strftime('%Y-%m-%d %H:%M')}" + ("（含 JSON）" if output_json else ""))
     print()
 
     # 获取全部有笔记的书
@@ -66,7 +70,7 @@ def main():
     for u in updated:
         print(f"\n📖 正在导出《{u['title']}》...", end=" ")
         try:
-            result = export_book(u["book"])
+            result = export_book(u["book"], output_json=output_json)
             if result:
                 print("✅")
                 success += 1
