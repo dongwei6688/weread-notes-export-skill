@@ -21,7 +21,7 @@ from collections import OrderedDict
 
 # ── 配置 ──────────────────────────────────────────────────────────────
 API_URL = "https://i.weread.qq.com/api/agent/gateway"
-SKILL_VERSION = "1.3.1"
+SKILL_VERSION = "1.4.0"
 
 # 输出目录：优先读环境变量，默认 ~/.weread-notes/
 DEFAULT_NOTES_DIR = Path.home() / ".weread-notes"
@@ -315,8 +315,10 @@ def export_book(book_info, output_json=False, json_only=False):
             f.write("\n".join(lines))
 
     # ── 可选：同时输出结构化 JSON（保留全字段，供数据分析；md 仍为人读产物）──
+    # 文件名用真实 bookId：同名书不再互相覆盖，每本书有唯一数据文件
     if output_json:
-        json_path = NOTES_DIR / f"{safe_name}.json"
+        json_name = f"{book_id}.json" if book_id else f"{safe_name}.json"
+        json_path = NOTES_DIR / json_name
         payload = {
             "version": 1,
             "book": {"id": book_id, "title": title, "author": author},
@@ -332,7 +334,8 @@ def export_book(book_info, output_json=False, json_only=False):
 
     bm_count = len(bookmarks)
     rv_count = len(reviews)
-    print(f"✅ {bm_count}划线 + {rv_count}评论 → {output_path.name}" + (" + " + safe_name + ".json" if output_json else ""))
+    json_label = f" + {book_id}.json" if output_json and book_id else (f" + {safe_name}.json" if output_json else "")
+    print(f"✅ {bm_count}划线 + {rv_count}评论 → {output_path.name}{json_label}")
     return True
 
 
