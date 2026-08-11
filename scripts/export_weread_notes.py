@@ -21,7 +21,7 @@ from collections import OrderedDict
 
 # ── 配置 ──────────────────────────────────────────────────────────────
 API_URL = "https://i.weread.qq.com/api/agent/gateway"
-SKILL_VERSION = "1.4.2"
+SKILL_VERSION = "1.4.3"
 
 # 输出目录：优先读环境变量，默认 ~/.weread-notes/
 DEFAULT_NOTES_DIR = Path.home() / ".weread-notes"
@@ -114,13 +114,18 @@ def export_book(book_info, output_json=False, json_only=False):
         print("跳过（无内容）")
         return False
 
-    # ── 封面 + 原文链接（真实 bookId → 微信读书 CDN 封面 / 网页版 deepLink；失败静默，不阻塞导出）──
+    # ── 封面 + 原文链接（真实 bookId → 微信读书 CDN 封面 / 阅读器链接；失败静默，不阻塞导出）──
     cover = ""
     deep_link = ""
     try:
         info = api_call("/book/info", {"bookId": book_id})
         cover = info.get("cover", "") or ""
-        deep_link = info.get("deepLink", "") or ""
+        dl = info.get("deepLink", "") or ""
+        # deepLink 是 book-detail 详情页；从 v 参数构造阅读器链接（web/reader/{urlId}）
+        if dl:
+            v = dl.split("v=")[-1].split("&")[0] if "v=" in dl else ""
+            if v:
+                deep_link = f"https://weread.qq.com/web/reader/{v}"
     except Exception:
         cover = ""
 
