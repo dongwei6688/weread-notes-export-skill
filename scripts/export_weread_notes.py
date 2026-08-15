@@ -21,7 +21,7 @@ from collections import OrderedDict
 
 # ── 配置 ──────────────────────────────────────────────────────────────
 API_URL = "https://i.weread.qq.com/api/agent/gateway"
-SKILL_VERSION = "1.4.3"
+SKILL_VERSION = "1.4.4"
 
 # 输出目录：优先读环境变量，默认 ~/.weread-notes/
 DEFAULT_NOTES_DIR = Path.home() / ".weread-notes"
@@ -309,7 +309,7 @@ def export_book(book_info, output_json=False, json_only=False):
                 lines.append(f"> {flatten_multi_line(item['text'])}")
                 lines.append("")
                 if "comment" in item:
-                    # 评论内空行/Unicode 行分隔压缩为单换行：避免解析器把空行当评论结束，导致后续行落 loose_text
+                    # 评论内空行/Unicode 行分隔压缩为单换行：避免下游解析器把空行当评论结束，导致后续行落为游离文本
                     comment = re.sub(r"\n\s*\n+", "\n", item["comment"].replace("\u2028", "\n").replace("\u2029", "\n").strip())
                     lines.append(f"💬 {comment}")
                     lines.append("")
@@ -416,15 +416,18 @@ def stats():
 
 # ── 导出全部 / 按书名查找 ──────────────────────────────────────────
 def export_all(output_json=False, json_only=False):
-    """导出全部（单书异常不中断整批，汇总失败清单）"""
+    """导出全部（单书异常不中断整批，汇总失败清单）。
+
+    返回失败数（0 = 全部成功；>0 = 有失败/跳过，调用方可用于退出码判断）。"""
     books = get_notebooks()
     exported = 0
     failed = 0
     failed_titles = []
     for b in books:
-        title = (b.get("book", {}) or {}).get("title", "?")
+        book = b.get("book") or {}  # CR 核验：book 键存在但值为 None 时兜底为空 dict，避免 export_book(None) AttributeError
+        title = book.get("title", "?")
         try:
-            if export_book(b.get("book", {}), output_json=output_json, json_only=json_only):
+            if export_book(book, output_json=output_json, json_only=json_only):
                 exported += 1
             else:
                 failed += 1
@@ -436,6 +439,7 @@ def export_all(output_json=False, json_only=False):
     print(f"\n✅ 导出完成：{exported}/{len(books)} 本书" + (f"，失败 {failed} 本" if failed else "") + (f"（含 JSON）" if output_json else ""))
     if failed_titles:
         print(f"⚠️  失败清单: {', '.join(failed_titles[:20])}" + ("..." if len(failed_titles) > 20 else ""))
+    return failed
 
 
 def export_by_title(keyword, output_json=False, json_only=False):
@@ -485,7 +489,8 @@ if __name__ == "__main__":
     elif cmd == "--recent":
         list_books(recent=True)
     elif cmd == "--all":
-        export_all(output_json=output_json, json_only=json_only)
+        failed = export_all(output_json=output_json, json_only=json_only)
+        sys.exit(1 if failed > 0 else 0)
     elif cmd == "--book" and len(sys.argv) > 2:
         export_by_title(sys.argv[2], output_json=output_json, json_only=json_only)
     elif cmd == "--stats":
