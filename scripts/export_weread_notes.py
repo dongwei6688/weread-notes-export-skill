@@ -14,7 +14,7 @@
   WEREAD_API_KEY    必需，微信读书 API Key，格式 wrk-xxx
   WEREAD_NOTES_DIR  可选，输出目录（默认 ~/.weread-notes/）
 """
-import json, os, re, sys, time, urllib.request
+import json, os, re, sys, time, urllib.request, urllib.error
 from pathlib import Path
 from datetime import datetime
 from collections import OrderedDict
@@ -39,8 +39,11 @@ def _get_api_key():
     return key
 
 
-def api_call(api_name, params=None):
-    """调用微信读书 Agent Gateway API"""
+def api_call(api_name, params=None, timeout=30):
+    """调用微信读书 Agent Gateway API。
+
+    timeout=30s 防止网络异常时无限挂起（cron 场景作业永不结束）；
+    HTTPError/URLError 转为带状态码的 RuntimeError 抛出，调用方可捕获。"""
     body = {"api_name": api_name, "skill_version": SKILL_VERSION}
     if params:
         body.update(params)
@@ -52,8 +55,13 @@ def api_call(api_name, params=None):
             "Content-Type": "application/json",
         },
     )
-    with urllib.request.urlopen(req) as resp:
-        return json.loads(resp.read())
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read())
+    except urllib.error.HTTPError as e:
+        raise RuntimeError(f"API {api_name} HTTP {e.code}: {e.reason}") from e
+    except urllib.error.URLError as e:
+        raise RuntimeError(f"API {api_name} 网络错误: {e.reason}") from e
 
 
 # ── 文件名安全转换 ──────────────────────────────────────────────────
@@ -68,7 +76,7 @@ def make_safe_filename(title):
 
 def flatten_multi_line(text):
     """多行划线/摘要压成单行：换行与 Unicode 行分隔符（U+2028/U+2029）替换为空格。
-    避免 build.py 的 splitlines 把 U+2028 当换行拆行，导致划线被拆成游离文本"""
+    避免下游解析器按行读取时把 U+2028 当换行拆行，导致划线被拆成游离文本"""
     norm = text.replace("\u2028", "\n").replace("\u2029", "\n")
     return " ".join(part.strip() for part in norm.split("\n") if part.strip())
 
@@ -408,13 +416,26 @@ def stats():
 
 # ── 导出全部 / 按书名查找 ──────────────────────────────────────────
 def export_all(output_json=False, json_only=False):
-    """导出全部"""
+    """导出全部（单书异常不中断整批，汇总失败清单）"""
     books = get_notebooks()
     exported = 0
+    failed = 0
+    failed_titles = []
     for b in books:
-        if export_book(b.get("book", {}), output_json=output_json, json_only=json_only):
-            exported += 1
-    print(f"\n✅ 导出完成：{exported}/{len(books)} 本书" + ("（含 JSON）" if output_json else ""))
+        title = (b.get("book", {}) or {}).get("title", "?")
+        try:
+            if export_book(b.get("book", {}), output_json=output_json, json_only=json_only):
+                exported += 1
+            else:
+                failed += 1
+                failed_titles.append(title)
+        except Exception as e:
+            print(f"  ⚠️ 导出失败《{title}》: {e}")
+            failed += 1
+            failed_titles.append(title)
+    print(f"\n✅ 导出完成：{exported}/{len(books)} 本书" + (f"，失败 {failed} 本" if failed else "") + (f"（含 JSON）" if output_json else ""))
+    if failed_titles:
+        print(f"⚠️  失败清单: {', '.join(failed_titles[:20])}" + ("..." if len(failed_titles) > 20 else ""))
 
 
 def export_by_title(keyword, output_json=False, json_only=False):

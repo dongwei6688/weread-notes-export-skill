@@ -132,7 +132,7 @@ output_path = NOTES_DIR / f"{safe_name}.md"
 
 | 错误 | 原因 | 处理 |
 |------|------|------|
-| `WEREAD_API_KEY` 未设置 | 环境变量缺失 | `echo $WEREAD_API_KEY` 检查，如空则设置 |
+| `WEREAD_API_KEY` 未设置 | 环境变量缺失 | `[ -n "$WEREAD_API_KEY" ] && echo '已设置'` 检查（勿 echo 完整 Key） |
 | API 返回 401 | Key 过期或无效 | 到 https://weread.qq.com/r/weread-skills 重新扫码获取 Key |
 | `chapterUid` 为空 | 旧版微信读书接口变化 | 降级为仅用 `chapterName` 匹配；跳过该条评论的其他策略 |
 | 文件写入失败 | 权限/磁盘满 | `ls -la $WEREAD_NOTES_DIR` 检查权限；`df -h` 检查磁盘 |

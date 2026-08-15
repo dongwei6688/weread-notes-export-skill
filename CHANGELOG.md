@@ -1,5 +1,16 @@
 # 更新日志
 
+## v1.4.4 (2026-08-15)
+
+### 新增
+- **README「独立性边界（铁律）」节**：明确本 Skill 与任何具体应用零耦合（不 import 应用模块、不读写应用数据、不触发应用构建、不硬编码路径、纯标准库）
+
+### 修复
+- **api_call 增加 30s 超时与错误处理**：HTTPError/URLError 转为带状态码的 RuntimeError，防止网络异常时无限挂起（cron 场景作业永不结束）
+- **export_all 单书异常不中断整批**：单本导出失败记录失败清单继续导出（原一本 API 报错即中止全量）
+- **SKILL.md FAQ 防 Key 泄露**：`echo $WEREAD_API_KEY` 改为 `[ -n "$WEREAD_API_KEY" ] && echo '已设置'`（勿在终端打印完整 Key）
+- **flatten_multi_line docstring 去耦合**：移除对具体应用组件（build.py）的注释性引用，改为中性表述
+
 ## v1.4.3 (2026-08-11)
 
 ### 修复
