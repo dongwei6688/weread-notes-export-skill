@@ -1,6 +1,7 @@
 ---
 name: weread-notes-export
 description: 微信读书笔记导出 — 按章节组织划线/评论，多行内容健壮处理，安全文件名，每日同步
+version: v1.4.4
 license: MIT
 ---
 

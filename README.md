@@ -3,6 +3,8 @@
 [![skills.sh](https://skills.sh/b/dongwei6688/weread-notes-export-skill)](https://skills.sh/dongwei6688/weread-notes-export-skill)
 [![GitHub release](https://img.shields.io/github/v/release/dongwei6688/weread-notes-export-skill)](https://github.com/dongwei6688/weread-notes-export-skill/releases)
 
+**最新版本：v1.4.4**（2026-08-15）
+
 把微信读书的**划线（书签）**和**想法（评论/批注）**按**章节树**导出为本地结构化 Markdown 文件。支持增量同步、安全文件名、多行内容健壮处理。
 
 ## ✨ 亮点
